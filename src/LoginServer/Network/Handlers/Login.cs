@@ -34,6 +34,7 @@ namespace Aura.Login.Network.Handlers
 			var unkByte = packet.GetByte();
 			var ident = packet.GetString();
 			// [180x00] Added some time in G18
+			if (false)
 			{
 				var unkInt = packet.GetInt();
 				var accountName1 = packet.GetString(); // sometimes empty?

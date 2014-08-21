@@ -18,7 +18,7 @@ namespace Aura.Shared.Network
 		public Socket Socket { get; set; }
 		public byte[] Buffer { get; set; }
 		public ClientState State { get; set; }
-		public MabiCrypto Crypto { get; set; }
+		public MabiCipher Cipher { get; protected set; }
 
 		private string _address;
 		public string Address
@@ -44,7 +44,7 @@ namespace Aura.Shared.Network
 		protected BaseClient()
 		{
 			this.Buffer = new byte[BufferDefaultSize];
-			this.Crypto = new MabiCrypto(0x41757261); // 0xAura
+			this.Cipher = new MabiCipher();
 		}
 
 		public bool Is(ClientState state)
@@ -53,15 +53,15 @@ namespace Aura.Shared.Network
 		}
 
 		/// <summary>
-		/// Sends buffer (duh).
+		/// Sends buffer.
+		/// 
+		/// DOES NOT DO ANY ENCRYPTION.
 		/// </summary>
 		/// <param name="buffer"></param>
-		public virtual void Send(byte[] buffer)
+		public virtual void SendRaw(byte[] buffer)
 		{
 			if (this.State == ClientState.Dead)
 				return;
-
-			this.EncodeBuffer(ref buffer);
 
 			//Log.Debug("out: " + BitConverter.ToString(buffer));
 
@@ -76,7 +76,7 @@ namespace Aura.Shared.Network
 		}
 
 		/// <summary>
-		/// Builds buffer from packet and sends it.
+		/// Builds buffer from packet and passes it to <see cref="Send(byte[])"/>.
 		/// </summary>
 		/// <param name="packet"></param>
 		public virtual void Send(Packet packet)
@@ -89,17 +89,34 @@ namespace Aura.Shared.Network
 		}
 
 		/// <summary>
-		/// Encodes buffer.
+		/// Encrypts buffer and then passes it to <see cref="SendRaw(byte[])"/>.
 		/// </summary>
 		/// <param name="buffer"></param>
-		protected abstract void EncodeBuffer(ref byte[] buffer);
+		/// <param name="protocolLength">The protocol header's length.
+		/// 6 for ordinary packets</param>
+		public virtual void Send(byte[] buffer, int protocolLength = 6)
+		{
+			this.Cipher.EncryptPacket(buffer, protocolLength, buffer.Length - protocolLength);
+
+			this.SendRaw(buffer);
+		}
 
 		/// <summary>
 		/// Builds packet, appending the overall header and checksum.
 		/// </summary>
 		/// <param name="packet"></param>
 		/// <returns></returns>
-		protected abstract byte[] BuildPacket(Packet packet);
+		protected virtual byte[] BuildPacket(Packet packet)
+		{
+			var size = packet.GetSize();
+
+			var result = new byte[6 + size]; // header + packet + checksum
+			result[0] = 0x88;
+			System.Buffer.BlockCopy(BitConverter.GetBytes(result.Length), 0, result, 1, sizeof(int));
+			packet.Build(ref result, 6);
+
+			return result;
+		}
 
 		/// <summary>
 		/// Kills client connection.

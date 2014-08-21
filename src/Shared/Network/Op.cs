@@ -10,7 +10,7 @@ namespace Aura.Shared.Network
 	{
 		// Login Server
 		// ------------------------------------------------------------------
-		public const int ClientIdent = 0x0FD1020A;
+		public const int ClientIdent = 0x01E;
 		public const int ClientIdentR = 0x1F;
 		public const int Login = 0x0FD12002;
 		public const int LoginR = 0x23;

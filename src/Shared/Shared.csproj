@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Aura.Shared</RootNamespace>
     <AssemblyName>Shared</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MySql.Data, Version=6.6.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
@@ -75,6 +78,7 @@
     <Compile Include="Network\BaseClient.cs" />
     <Compile Include="Network\BaseServer.cs" />
     <Compile Include="Network\DefaultClient.cs" />
+    <Compile Include="Network\MabiCipher.cs" />
     <Compile Include="Network\MabiCrypto.cs" />
     <Compile Include="Network\DefaultServer.cs" />
     <Compile Include="Network\Packet.cs" />
@@ -99,6 +103,7 @@
     <Compile Include="Util\Log.cs" />
     <Compile Include="Mabi\ErinnTime.cs" />
     <Compile Include="Util\CliUtil.cs" />
+    <Compile Include="Util\MabiAesFastEngine.cs" />
     <Compile Include="Util\Math2.cs" />
     <Compile Include="Util\OrderedDictionary.cs" />
     <Compile Include="Util\RandomProvider.cs" />

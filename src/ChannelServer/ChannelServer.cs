@@ -165,7 +165,6 @@ namespace Aura.Channel
 
 					// Recv Seed, send back empty packet to get done with the challenge.
 					this.LoginServer.Socket.Receive(buffer);
-					this.LoginServer.Crypto = new MabiCrypto(BitConverter.ToUInt32(buffer, 0));
 					this.LoginServer.Send(Packet.Empty());
 
 					// Challenge end

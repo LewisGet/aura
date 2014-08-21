@@ -24,32 +24,40 @@ namespace Aura.Shared.Network
 
 		protected override void HandleBuffer(TClient client, byte[] buffer)
 		{
+			Log.Info(BitConverter.ToString(buffer));
+
 			var length = buffer.Length;
 
-			// Cut 4 bytes at the end (checksum?)
-			Array.Resize(ref buffer, length -= 4);
+			// Not enabled in R61
+			if (false)
+			{
+				// Cut 4 bytes at the end (checksum?)
+				Array.Resize(ref buffer, length -= 4);
 
-			// Write new length into the buffer.
-			BitConverter.GetBytes(length).CopyTo(buffer, 1);
+				// Write new length into the buffer.
+				BitConverter.GetBytes(length)
+					.CopyTo(buffer, 1);
+			}
 
-			// Decrypt packet if crypt flag isn't 3.
-			if (buffer[5] != 0x03)
-				client.Crypto.DecodePacket(ref buffer);
+			client.Cipher.DecryptPacket(buffer, 6, length - 6);
 
 			//Log.Debug("in:  " + BitConverter.ToString(buffer));
 
 			// Flag 1 is a ping or something, encode and send back.
 			if (buffer[5] == 0x01)
 			{
-				client.Crypto.EncodePacket(ref buffer);
-				client.Socket.Send(buffer);
+				BitConverter.GetBytes(BitConverter.ToUInt32(buffer, 6) ^ 0x98BADCFE).CopyTo(buffer, 6);
+
+				client.SendRaw(buffer);
 			}
 			else
 			{
 				// First packet, skip challenge and send success msg.
 				if (client.State == ClientState.BeingChecked)
 				{
-					client.Send(new byte[] { 0x88, 0x07, 0x00, 0x00, 0x00, 0x00, 0x07 });
+					var c_success = new byte[] { 0x88, 0x07, 0x00, 0x00, 0x00, 0x00, 0x07 };
+
+					client.Send(c_success);
 
 					client.State = ClientState.LoggingIn;
 				}
@@ -76,7 +84,7 @@ namespace Aura.Shared.Network
 		protected override void OnClientConnected(TClient client)
 		{
 			// Send seed
-			client.Socket.Send(BitConverter.GetBytes(client.Crypto.Seed));
+			client.SendRaw(BitConverter.GetBytes(0x41757261)); // 0xAura;
 
 			base.OnClientConnected(client);
 		}

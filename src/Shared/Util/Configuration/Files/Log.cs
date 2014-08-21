@@ -22,6 +22,11 @@ namespace Aura.Shared.Util.Configuration.Files
 				Log.Archive = "log/archive/";
 			Log.LogFile = string.Format("log/{0}.txt", System.AppDomain.CurrentDomain.FriendlyName.Replace(".exe", "").Replace(".vshost", ""));
 			Log.Hide |= this.Hide;
+
+#if DEBUG
+			// Always show debug messages if running in debug mode
+			Log.Hide &= ~LogLevel.Debug;
+#endif
 		}
 	}
 }

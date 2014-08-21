@@ -121,7 +121,7 @@ namespace Aura.Channel.Network
 	/// </summary>
 	public class DummyClient : ChannelClient
 	{
-		public override void Send(byte[] buffer)
+		public override void SendRaw(byte[] buffer)
 		{ }
 
 		public override void Send(Packet packet)

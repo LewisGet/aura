@@ -64,8 +64,6 @@ namespace Aura.Shared.Network
 			_buffer = buffer;
 			_ptr = offset;
 
-			var length = buffer.Length;
-
 			this.Op = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(_buffer, _ptr));
 			this.Id = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(_buffer, _ptr + sizeof(int)));
 			_ptr += 12;
@@ -466,8 +464,6 @@ namespace Aura.Shared.Network
 			if (buffer.Length < offset + this.GetSize())
 				throw new Exception("Buffer too small for packet, use GetSize().");
 
-			var length = _bodyLen;
-
 			// Header
 			{
 				// Op + Id
@@ -482,8 +478,6 @@ namespace Aura.Shared.Network
 				this.WriteVarInt(_elements, buffer, ref offset);
 
 				buffer[offset++] = 0;
-
-				length += offset;
 			}
 
 			// Body
